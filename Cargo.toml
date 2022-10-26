@@ -1,0 +1,6 @@
+[package]
+edition = "2021"
+name = "ow-time"
+version = "0.1.0"
+[dependencies]
+chrono = "0.4.22"
