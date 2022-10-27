@@ -1,29 +1,24 @@
 use std::{
-    collections::HashMap,
     env::args,
     fs::{self, File},
-    process::{Command, Stdio},
+    process::{Command},
 };
 
 use arboard::Clipboard;
+use chrono::Datelike;
+use ordinal::Ordinal;
 use serde::Deserialize;
-use serde_json::{Map, Value};
 mod secrets;
-
-#[derive(Deserialize, Debug)]
-struct User {
-    login: String,
-    id: u32,
-}
 
 fn main() {
     println!("YES OW TIME");
 
     let output_file = "assets/ow-time.gif";
     // Create text for gif
-    
-    let text = chrono::Local::now().format("It is %H\\:%M\\:%S %A %B %d %Y");
-    let vf_text = format!("drawtext=fontfile=assets/Montserrat-Bold.ttf:fontcolor=white:borderw=3:fontsize=24:x=(w-text_w)/2:y=(h-text_h)-20:text='{}'", text);
+    let day_ord = Ordinal(chrono::Local::now().day()).to_string();
+    let format_str = format!("It is %H\\:%M\\:%S %A %B {day_ord} %Y");
+    let text = chrono::Local::now().format(&format_str);
+    let vf_text = format!("drawtext=fontfile=assets/Montserrat-Bold.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text='{}'", text);
 
     println!("Creating GIF...");
     Command::new("ffmpeg")
