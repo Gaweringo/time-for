@@ -10,3 +10,4 @@ serde = { version = "1.0.147", features = ["serde_derive"] }
 serde_json = "1.0.87"
 ordinal = "0.3.2"
 tfc = "0.6.1"
+spinners = "4.1.0"

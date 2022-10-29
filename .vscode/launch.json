@@ -5,7 +5,7 @@
 			"request": "launch",
 			"name": "run ow-time",
 			"program": "${workspaceFolder}\\target\\debug\\ow-time.exe",
-			"args": [],
+			"args": ["o"],
 			"cwd": "${workspaceFolder}",
 			"sourceMap": {},
 			"sourceLanguages": [
