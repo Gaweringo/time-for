@@ -1,16 +1,17 @@
 use std::{
     env::args,
     fs::{self, File},
-    process::{Command},
+    process::Command, error::Error,
 };
 
 use arboard::Clipboard;
 use chrono::Datelike;
 use ordinal::Ordinal;
 use serde::Deserialize;
+use tfc::{KeyboardContext, Context, Key};
 mod secrets;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>>{
     println!("YES OW TIME");
 
     let output_file = "assets/ow-time.gif";
@@ -59,6 +60,11 @@ fn main() {
     if let Ok(resp) = res.json::<Response>() {
         let mut clipboard = Clipboard::new().expect("Create new clipboard");
         let _ = clipboard.set_text(resp.data.link.clone());
+
+        let mut ctx = Context::new()?;
+        ctx.key_down(Key::Control)?;
+        ctx.key_click(Key::V)?;
+        ctx.key_up(Key::Control)?;
         println!("{:#?}", resp.data.link);
     } else {
         eprintln!("There was an error uploading to imgur, so here is the file path instead:");
@@ -72,6 +78,7 @@ fn main() {
     }
 
     println!("DONE DONE DONE DONE DONE DONE");
+    Ok(())
 }
 
 #[derive(Deserialize)]
