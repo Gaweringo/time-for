@@ -1,20 +1,23 @@
 use std::{
-    env::args,
+    env::{args, temp_dir},
+    error::Error,
     fs::{self, File},
-    process::Command, error::Error,
+    process::Command,
 };
 
 use arboard::Clipboard;
 use chrono::Datelike;
 use ordinal::Ordinal;
 use serde::Deserialize;
-use tfc::{KeyboardContext, Context, Key};
+use tfc::{Context, Key, KeyboardContext};
 mod secrets;
 
-fn main() -> Result<(), Box<dyn Error>>{
+fn main() -> Result<(), Box<dyn Error>> {
     println!("YES OW TIME");
 
-    let output_file = "assets/ow-time.gif";
+    let temp = temp_dir();
+    let output_file = temp.join("time-for.gif");
+    // let output_file = "assets/ow-time.gif";
     // Create text for gif
     let day_ord = Ordinal(chrono::Local::now().day()).to_string();
     let format_str = format!("It is %H\\:%M\\:%S %A %B {day_ord} %Y");
@@ -26,15 +29,16 @@ fn main() -> Result<(), Box<dyn Error>>{
         .args(["-i", "assets/look_at_time.gif"])
         .args(["-vf", vf_text.as_str()])
         .arg("-y")
-        .arg(&output_file)
+        .arg(&output_file.as_os_str())
         // .stdout(Stdio::inherit())
         // .stderr(Stdio::inherit())
         .output()
         .expect("error ffmpeg run");
 
     // Open output folder in windows explorer if requested with "o" or "open"
-    args().next();
-    match args().next() {
+    let mut args = args();
+    args.next();
+    match args.next() {
         Some(arg) => match arg.as_str() {
             "o" | "open" => {
                 Command::new("explorer").arg("assets").output().unwrap();
