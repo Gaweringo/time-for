@@ -1,6 +1,6 @@
 [package]
 edition = "2021"
-name = "ow-time"
+name = "time-for"
 version = "0.1.0"
 [dependencies]
 arboard = "3.1.1"

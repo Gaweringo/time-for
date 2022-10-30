@@ -3,6 +3,6 @@ use std::{
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
-    ow_time::run()
+    time_for::run()
 }
 
