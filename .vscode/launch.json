@@ -1,106 +1,64 @@
 {
-	"configurations": [
-		{
-			"type": "lldb",
-			"request": "launch",
-			"name": "run ow-time",
-			"program": "${workspaceFolder}\\target\\debug\\ow-time.exe",
-			"args": ["o"],
-			"cwd": "${workspaceFolder}",
-			"sourceMap": {},
-			"sourceLanguages": [
-				"rust"
-			],
-			"env": {
-				"RUST_BACKTRACE": "short",
-				"ALLUSERSPROFILE": "C:\\ProgramData",
-				"APPDATA": "C:\\Users\\gawer\\AppData\\Roaming",
-				"APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL": "1",
-				"CAMLIBS": "C:\\Program Files\\darktable\\lib\\libgphoto2\\2.5.29",
-				"ChocolateyInstall": "C:\\ProgramData\\chocolatey",
-				"ChocolateyLastPathUpdate": "133106833371885325",
-				"ChocolateyToolsLocation": "C:\\tools",
-				"CHROME_CRASHPAD_PIPE_NAME": "\\\\.\\pipe\\crashpad_1180_RPFJBFFLSXDCHHJL",
-				"CLion": "C:\\Program Files\\JetBrains\\CLion 221.5080.1\\bin;",
-				"CommonProgramFiles": "C:\\Program Files\\Common Files",
-				"CommonProgramFiles(x86)": "C:\\Program Files (x86)\\Common Files",
-				"CommonProgramW6432": "C:\\Program Files\\Common Files",
-				"COMPUTERNAME": "AMD-BOI",
-				"ComSpec": "C:\\Windows\\system32\\cmd.exe",
-				"DataSpell": "C:\\Program Files\\JetBrains\\DataSpell 221.4994.58\\bin;",
-				"DriverData": "C:\\Windows\\System32\\Drivers\\DriverData",
-				"ELECTRON_RUN_AS_NODE": "1",
-				"ERLANG_HOME": "C:\\Program Files\\erl9.2",
-				"FFMPEG_DIR": "C:\\Users\\gawer\\scoop\\apps\\ffmpeg-shared\\current",
-				"FPS_BROWSER_APP_PROFILE_STRING": "Internet Explorer",
-				"FPS_BROWSER_USER_PROFILE_STRING": "Default",
-				"GoLand": "C:\\Program Files\\JetBrains\\GoLand 221.5080.20\\bin;",
-				"GOPATH": "C:\\Users\\gawer\\go",
-				"HOMEDRIVE": "C:",
-				"HOMEPATH": "\\Users\\gawer",
-				"IOLIBS": "C:\\Program Files\\darktable\\lib\\libgphoto2_port\\0.12.0",
-				"JetBrains Rider": "C:\\Program Files\\JetBrains\\JetBrains Rider 221.4994.45\\bin;",
-				"KEYSHOT10": "C:\\Users\\Public\\Documents\\KeyShot 10",
-				"KEYSHOT_EXTERNAL_LICENSE_FOLDER": "C:\\Program Files\\Siemens\\Solid Edge 2022\\Program",
-				"LIBCLANG_PATH": "C:\\Users\\gawer\\scoop\\apps\\llvm\\current\\bin",
-				"LOCALAPPDATA": "C:\\Users\\gawer\\AppData\\Local",
-				"LOGONSERVER": "\\\\AMD-BOI",
-				"NIDAQmxSwitchDir": "C:\\Program Files (x86)\\National Instruments\\NI-DAQ\\Switch\\",
-				"NIEXTCCOMPILERSUPP": "C:\\Program Files (x86)\\National Instruments\\Shared\\ExternalCompilerSupport\\C\\",
-				"NODE_PATH": "C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\global\\node_modules",
-				"NO_PROXY": "127.0.0.1",
-				"NUMBER_OF_PROCESSORS": "16",
-				"OneDrive": "P:\\Martin\\OneDrive - HTBLA Steyr",
-				"OneDriveCommercial": "P:\\Martin\\OneDrive - HTBLA Steyr",
-				"OneDriveConsumer": "C:\\Users\\gawer\\OneDrive",
-				"ORIGINAL_XDG_CURRENT_DESKTOP": "undefined",
-				"OS": "Windows_NT",
-				"Path": "C:\\Program Files\\Lapce\\;C:\\Program Files\\Microsoft\\jdk-11.0.12.7-hotspot\\bin;C:\\Program Files (x86)\\VMware\\VMware Player\\bin\\;C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.13.8-hotspot\\bin;C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\;C:\\Program Files\\PuTTY\\;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin\\;C:\\Program Files\\IVI Foundation\\VISA\\Win64\\Bin\\;C:\\Program Files (x86)\\National Instruments\\Shared\\LabVIEW CLI;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin;C:\\Program Files\\MATLAB\\R2021b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2021b\\bin;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\PostgreSQL\\14\\bin;C:\\Program Files\\electricui-arc\\;C:\\Program Files\\nodejs\\;C:\\Program Files\\CMake\\bin;C:\\Program Files\\Neovim\\/bin;C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn\\;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\ProgramData\\DockerDesktop\\version-bin;C:\\Program Files\\nu\\bin\\;C:\\Program Files\\Go\\bin;C:\\Program Files\\LLVM\\bin;C:\\Program Files\\PowerShell\\7\\;C:\\Users\\gawer\\scoop\\apps\\llvm\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\global\\node_modules\\.bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\qemu\\current;C:\\Users\\gawer\\scoop\\apps\\gsudo\\current;C:\\Users\\gawer\\.cargo\\bin;P:\\Martin\\Downloads\\v_windows\\v\\.bin;C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310\\Scripts;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310;C:\\Users\\gawer\\scoop\\shims;C:\\Users\\gawer\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\gawer\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\flutter\\bin;C:\\Users\\gawer\\Downloads\\ffmpeg-2021-12-06-git-ef00d40e32-full_build\\bin;C:\\Users\\gawer\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\gawer\\spicetify-cli;P:\\Martin\\PC\\CLI;C:\\tools\\dart-sdk\\bin;C:\\Users\\gawer\\AppData\\Roaming\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Azure Data Studio\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\Users\\gawer\\AppData\\Local\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Roaming\\npm;C:\\Program Files\\JetBrains\\PyCharm Community Edition 2021.3.2\\bin;C:\\Program Files\\JetBrains\\JetBrains Rider 221.4994.45\\bin;C:\\Program Files\\JetBrains\\CLion 221.5080.1\\bin;C:\\Program Files\\JetBrains\\GoLand 221.5080.20;C:\\Users\\gawer\\AppData\\Local\\Programs\\oh-my-posh\\bin;C:\\Users\\gawer\\AppData\\Local\\JetBrains\\Toolbox\\scripts;C:\\Users\\gawer\\go\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\ExifTool;C:\\Program Files\\qemu;C:\\Users\\gawer\\go\\bin",
-				"PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC",
-				"PLATFORMIO_CALLER": "vscode",
-				"PLATFORMIO_IDE": "2.5.4",
-				"PLATFORMIO_PATH": "C:\\Users\\gawer\\.platformio\\penv\\Scripts;C:\\Users\\gawer\\.platformio\\penv;C:\\Users\\gawer\\.platformio\\python3;C:\\Program Files\\Lapce\\;C:\\Program Files\\Microsoft\\jdk-11.0.12.7-hotspot\\bin;C:\\Program Files (x86)\\VMware\\VMware Player\\bin\\;C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.13.8-hotspot\\bin;C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\;C:\\Program Files\\PuTTY\\;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin\\;C:\\Program Files\\IVI Foundation\\VISA\\Win64\\Bin\\;C:\\Program Files (x86)\\National Instruments\\Shared\\LabVIEW CLI;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin;C:\\Program Files\\MATLAB\\R2021b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2021b\\bin;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\PostgreSQL\\14\\bin;C:\\Program Files\\electricui-arc\\;C:\\Program Files\\nodejs\\;C:\\Program Files\\CMake\\bin;C:\\Program Files\\Neovim\\/bin;C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn\\;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\ProgramData\\DockerDesktop\\version-bin;C:\\Program Files\\nu\\bin\\;C:\\Program Files\\Go\\bin;C:\\Program Files\\LLVM\\bin;C:\\Program Files\\PowerShell\\7\\;C:\\Users\\gawer\\scoop\\apps\\llvm\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\global\\node_modules\\.bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\qemu\\current;C:\\Users\\gawer\\scoop\\apps\\gsudo\\current;C:\\Users\\gawer\\.cargo\\bin;P:\\Martin\\Downloads\\v_windows\\v\\.bin;C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310\\Scripts;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310;C:\\Users\\gawer\\scoop\\shims;C:\\Users\\gawer\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\gawer\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\flutter\\bin;C:\\Users\\gawer\\Downloads\\ffmpeg-2021-12-06-git-ef00d40e32-full_build\\bin;C:\\Users\\gawer\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\gawer\\spicetify-cli;P:\\Martin\\PC\\CLI;C:\\tools\\dart-sdk\\bin;C:\\Users\\gawer\\AppData\\Roaming\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Azure Data Studio\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\Users\\gawer\\AppData\\Local\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Roaming\\npm;C:\\Program Files\\JetBrains\\PyCharm Community Edition 2021.3.2\\bin;C:\\Program Files\\JetBrains\\JetBrains Rider 221.4994.45\\bin;C:\\Program Files\\JetBrains\\CLion 221.5080.1\\bin;C:\\Program Files\\JetBrains\\GoLand 221.5080.20;C:\\Users\\gawer\\AppData\\Local\\Programs\\oh-my-posh\\bin;C:\\Users\\gawer\\AppData\\Local\\JetBrains\\Toolbox\\scripts;C:\\Users\\gawer\\go\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\ExifTool;C:\\Program Files\\qemu;C:\\Users\\gawer\\go\\bin;C:\\Program Files\\Lapce\\;C:\\Program Files\\Microsoft\\jdk-11.0.12.7-hotspot\\bin;C:\\Program Files (x86)\\VMware\\VMware Player\\bin\\;C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.13.8-hotspot\\bin;C:\\Program Files\\ImageMagick-7.1.0-Q16-HDRI;C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem;C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C:\\Windows\\System32\\OpenSSH\\;C:\\Program Files\\dotnet\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\;C:\\Program Files\\PuTTY\\;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin\\;C:\\Program Files\\IVI Foundation\\VISA\\Win64\\Bin\\;C:\\Program Files (x86)\\National Instruments\\Shared\\LabVIEW CLI;C:\\Program Files (x86)\\IVI Foundation\\VISA\\WinNT\\Bin;C:\\Program Files\\MATLAB\\R2021b\\runtime\\win64;C:\\Program Files\\MATLAB\\R2021b\\bin;C:\\ProgramData\\chocolatey\\bin;C:\\Program Files\\PostgreSQL\\14\\bin;C:\\Program Files\\electricui-arc\\;C:\\Program Files\\nodejs\\;C:\\Program Files\\CMake\\bin;C:\\Program Files\\Neovim\\/bin;C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn\\;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\ProgramData\\DockerDesktop\\version-bin;C:\\Program Files\\nu\\bin\\;C:\\Program Files\\Go\\bin;C:\\Program Files\\LLVM\\bin;C:\\Program Files\\PowerShell\\7\\;C:\\Users\\gawer\\scoop\\apps\\llvm\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\global\\node_modules\\.bin;C:\\Users\\gawer\\scoop\\apps\\yarn\\current\\bin;C:\\Users\\gawer\\scoop\\apps\\qemu\\current;C:\\Users\\gawer\\scoop\\apps\\gsudo\\current;C:\\Users\\gawer\\.cargo\\bin;P:\\Martin\\Downloads\\v_windows\\v\\.bin;C:\\Program Files\\MySQL\\MySQL Shell 8.0\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310\\Scripts;C:\\Users\\gawer\\AppData\\Local\\Programs\\Python\\Python310;C:\\Users\\gawer\\scoop\\shims;C:\\Users\\gawer\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\gawer\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\flutter\\bin;C:\\Users\\gawer\\Downloads\\ffmpeg-2021-12-06-git-ef00d40e32-full_build\\bin;C:\\Users\\gawer\\AppData\\Local\\GitHubDesktop\\bin;C:\\Users\\gawer\\spicetify-cli;P:\\Martin\\PC\\CLI;C:\\tools\\dart-sdk\\bin;C:\\Users\\gawer\\AppData\\Roaming\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\Azure Data Studio\\bin;C:\\Users\\gawer\\.dotnet\\tools;C:\\Users\\gawer\\AppData\\Local\\Pub\\Cache\\bin;C:\\Users\\gawer\\AppData\\Roaming\\npm;C:\\Program Files\\JetBrains\\PyCharm Community Edition 2021.3.2\\bin;C:\\Program Files\\JetBrains\\JetBrains Rider 221.4994.45\\bin;C:\\Program Files\\JetBrains\\CLion 221.5080.1\\bin;C:\\Program Files\\JetBrains\\GoLand 221.5080.20;C:\\Users\\gawer\\AppData\\Local\\Programs\\oh-my-posh\\bin;C:\\Users\\gawer\\AppData\\Local\\JetBrains\\Toolbox\\scripts;C:\\Users\\gawer\\go\\bin;C:\\Users\\gawer\\AppData\\Local\\Programs\\ExifTool;C:\\Program Files\\qemu;C:\\Users\\gawer\\go\\bin",
-				"POSH_THEMES_PATH": "C:\\Users\\gawer\\AppData\\Local\\Programs\\oh-my-posh\\themes",
-				"POWERSHELL_DISTRIBUTION_CHANNEL": "MSI:Windows 10 Pro",
-				"PROCESSOR_ARCHITECTURE": "AMD64",
-				"PROCESSOR_IDENTIFIER": "AMD64 Family 23 Model 1 Stepping 1, AuthenticAMD",
-				"PROCESSOR_LEVEL": "23",
-				"PROCESSOR_REVISION": "0101",
-				"ProgramData": "C:\\ProgramData",
-				"ProgramFiles": "C:\\Program Files",
-				"ProgramFiles(x86)": "C:\\Program Files (x86)",
-				"ProgramW6432": "C:\\Program Files",
-				"PSModulePath": "C:\\Program Files\\WindowsPowerShell\\Modules;C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules",
-				"PUBLIC": "C:\\Users\\Public",
-				"PyCharm Community Edition": "C:\\Program Files\\JetBrains\\PyCharm Community Edition 2021.3.2\\bin;",
-				"P_SCHEMA": "C:\\Program Files\\Siemens\\Solid Edge 2022\\Schema",
-				"RABBITMQ_BASE": "C:\\ProgramData\\RabbitMQ",
-				"RABBITMQ_CONFIG_FILE": "\"C:\\ProgramData\\National Instruments\\Skyline\\RabbitMQ\\rabbitmq\"",
-				"RABBITMQ_NODENAME": "rabbit@localhost",
-				"SESSIONNAME": "Console",
-				"SE_LICENSE_SERVER": "C:\\Program Files\\Siemens\\Solid Edge 2022\\Preferences\\SELicense.lic",
-				"SystemDrive": "C:",
-				"SystemRoot": "C:\\Windows",
-				"TEMP": "C:\\Users\\gawer\\AppData\\Local\\Temp",
-				"TMP": "C:\\Users\\gawer\\AppData\\Local\\Temp",
-				"USERDOMAIN": "AMD-BOI",
-				"USERDOMAIN_ROAMINGPROFILE": "AMD-BOI",
-				"USERNAME": "gawer",
-				"USERPROFILE": "C:\\Users\\gawer",
-				"VS160COMCOMNTOOLS": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\Common7\\Tools\\",
-				"VSCODE_AMD_ENTRYPOINT": "vs/workbench/api/node/extensionHostProcess",
-				"VSCODE_CODE_CACHE_PATH": "C:\\Users\\gawer\\AppData\\Roaming\\Code\\CachedData\\d045a5eda657f4d7b676dedbfa7aab8207f8a075",
-				"VSCODE_CWD": "C:\\Users\\gawer\\AppData\\Local\\Programs\\Microsoft VS Code",
-				"VSCODE_HANDLES_UNCAUGHT_ERRORS": "true",
-				"VSCODE_IPC_HOOK": "\\\\.\\pipe\\44f68e38dd4204fc674e7aa0b8bc7e13-1.72.2-main-sock",
-				"VSCODE_NLS_CONFIG": "{\"locale\":\"en-gb\",\"availableLanguages\":{},\"_languagePackSupport\":true}",
-				"VSCODE_PID": "1180",
-				"VXIPNPPATH": "C:\\Program Files (x86)\\IVI Foundation\\VISA\\",
-				"VXIPNPPATH64": "C:\\Program Files\\IVI Foundation\\VISA\\",
-				"windir": "C:\\Windows",
-				"WIRESHARK_CONFIG_DIR": "C:\\Users\\gawer\\scoop\\apps\\wireshark\\current\\Data",
-				"WIRESHARK_DATA_DIR": "C:\\Users\\gawer\\scoop\\apps\\wireshark\\current\\Data"
-			}
-		}
-	]
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'time-for'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=time-for"
+                ],
+                "filter": {
+                    "name": "time-for",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'time-for'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=time-for",
+                    "--package=time-for"
+                ],
+                "filter": {
+                    "name": "time-for",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'time-for'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=time-for",
+                    "--package=time-for"
+                ],
+                "filter": {
+                    "name": "time-for",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
 }
