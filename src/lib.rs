@@ -7,6 +7,7 @@ use std::{
     process::{Command, Stdio},
 };
 
+use anyhow::bail;
 use arboard::Clipboard;
 use chrono::Datelike;
 use ordinal::Ordinal;
@@ -21,7 +22,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     println!("YES OW TIME");
 
     // TODO: use clap to get this from an argument
-    let query_text = "hearthstone";
+    let query_text = "going home";
 
     let temp = temp_dir();
     let output_file = temp.join("time-for\\time-for.gif");
@@ -111,7 +112,12 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     sp.stop_with_newline();
     // loading_thread_handle.join().expect("To join thread");
 
-    output_and_paste(res)?;
+    if let Err(_) = output_and_paste(res) {
+        eprintln!("There was an error uploading to imgur, so here is the file path instead:");
+        // Print path to output file
+        let can_path = final_output_file.as_os_str().to_string_lossy();
+        eprintln!("{}", &can_path);
+    }
 
     // Open output folder in windows explorer if requested with "o" or "open"
     // TODO: Use clap to make this parsing better
@@ -120,7 +126,10 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     match args.next() {
         Some(arg) => match arg.as_str() {
             "o" | "open" => {
-                let explorer_arg = format!("/select,{}", output_file.as_os_str().to_string_lossy());
+                let explorer_arg = format!(
+                    "/select,{}",
+                    final_output_file.as_os_str().to_string_lossy()
+                );
                 Command::new("explorer").arg(explorer_arg).output().unwrap();
             }
             _ => {}
@@ -189,8 +198,8 @@ fn upload_to_imgur(output_file: &Path) -> reqwest::blocking::Response {
     res
 }
 
-fn output_and_paste(res: reqwest::blocking::Response) -> Result<(), Box<dyn Error>> {
-    Ok(if let Ok(resp) = res.json::<Response>() {
+fn output_and_paste(res: reqwest::blocking::Response) -> anyhow::Result<()> {
+    if let Ok(resp) = res.json::<Response>() {
         let mut clipboard = Clipboard::new().expect("Create new clipboard");
         let _ = clipboard.set_text(resp.data.link.clone());
 
@@ -199,16 +208,10 @@ fn output_and_paste(res: reqwest::blocking::Response) -> Result<(), Box<dyn Erro
         ctx.key_click(Key::V)?;
         ctx.key_up(Key::Control)?;
         println!("{:#?}", resp.data.link);
+        return Ok(());
     } else {
-        eprintln!("There was an error uploading to imgur, so here is the file path instead:");
-        // Print path to output file
-        let can_path = fs::canonicalize("assets/ow-time.gif")
-            .unwrap()
-            .into_os_string()
-            .into_string()
-            .unwrap();
-        eprintln!("{}", &can_path[4..]);
-    })
+        bail!("Output and paste error");
+    }
 }
 
 #[derive(Deserialize)]
