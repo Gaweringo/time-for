@@ -22,7 +22,8 @@ pub fn add_text(
     text: &str,
     output_file: &std::path::PathBuf,
 ) -> io::Result<Child> {
-    let vf_text = format!("drawtext=fontfile=assets/Montserrat-Bold.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text='{}'", text);
+    // TODO: Find a better way to handle fonts
+    let vf_text = format!("drawtext='fontfile=C\\:/Windows/fonts/impact.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text={}'", text);
     Command::new("ffmpeg")
         .arg("-i")
         .arg(input_file)
