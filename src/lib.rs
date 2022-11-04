@@ -1,125 +1,168 @@
 use std::{
     env::{args, temp_dir},
     error::Error,
+    ffi::{OsStr, OsString},
     fs::{self},
     io::{self, Cursor},
-    path::Path,
-    process::{Command},
+    path::{Path, PathBuf},
+    process::Command,
 };
 
 use anyhow::bail;
 use arboard::Clipboard;
 use chrono::Datelike;
+use clap::Parser;
 use ordinal::Ordinal;
 use serde::Deserialize;
 use spinners::{Spinner, Spinners};
 use tfc::{Context, Key, KeyboardContext};
 
+mod clapper;
+mod ffmpeg;
 mod secrets;
 mod tenor;
-mod ffmpeg;
+
+struct MediaFile(PathBuf);
+
+impl MediaFile {
+    /// The given file but with "_text" added to the file name
+    pub fn text(&self) -> PathBuf {
+        self.add_to_file_name("_text")
+    }
+
+    /// The given file but with "_scaled" added to the file name
+    pub fn scaled(&self) -> PathBuf {
+        self.add_to_file_name("_scaled")
+    }
+
+    //
+    pub fn base(&self) -> PathBuf {
+        self.0.clone()
+    }
+
+    /// Adds the `addition` string to the file name of the `file`
+    fn add_to_file_name(&self, addition: &str) -> PathBuf {
+        self.0.with_file_name(
+            (self.0.file_stem().unwrap_or_default().to_string_lossy()
+                + addition
+                + "."
+                + self
+                    .0
+                    .extension()
+                    .unwrap_or(&OsStr::new("webm"))
+                    .to_string_lossy())
+            .to_string(),
+        )
+    }
+}
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     println!("TIME FOR");
 
+    let clap_args = clapper::Inputs::parse();
+
     // TODO: use clap to get this from an argument
-    let query_text = "sleep";
+    let query = &clap_args.query;
 
     let temp = temp_dir();
-    let query_webm = temp.join("time-for\\query.webm");
-    let query_webm_with_text = temp.join("time-for\\query_text.webm");
-    let query_webm_with_text_scaled = temp.join("time-for\\query_text_scaled.webm");
-    
-    let look_at_time_webm = temp.join("time-for\\look_at_time_rnd.webm");
-    let look_at_time_text_webm = temp.join("time-for\\time-for.webm");
-    let look_at_time_text_scaled_webm = temp.join("time-for\\time-for_scaled.webm");
-    let final_output = temp.join("time-for\\full.webm");
+    let work_dir = temp.join("time-for");
 
-    if let Some(parent_dir) = look_at_time_text_webm.parent() {
-        match parent_dir.try_exists() {
-            Ok(false) | Err(_) => fs::create_dir_all(parent_dir)?,
-            Ok(true) => {}
-        }
+    let query_file = MediaFile(work_dir.join("query.webm"));
+    let look_at_time_file = MediaFile(work_dir.join("look_at_time.webm"));
+
+    let final_output = work_dir.join("full.webm");
+
+    // ?: Is the check even needed?
+    match work_dir.try_exists() {
+        Ok(false) | Err(_) => fs::create_dir_all(work_dir)?,
+        Ok(true) => {}
     }
 
     let mut sp = Spinner::new(Spinners::Arc, "Creating GIF".into());
-    // let (tx, rx) = mpsc::channel();
-    // let loading_thread_handle = thread::spawn(move || {
-    //     print!("Creating GIF");
-    //     loop {
-    //         match rx.try_recv() {
-    //             Ok(stop) if stop => break,
-    //             Err(_) | Ok(_) => {
-    //                 print!(".");
-    //                 io::stdout().flush().unwrap();
-    //                 thread::sleep(Duration::from_millis(200));
-    //             }
-    //         }
-    //     }
-    //     println!();
-    // });
 
-    // Download a random gif
-    let random_webm_url = tenor::random_webm(query_text, Some(5))?;
-    // println!("{}", random_webm_url);
-    download_file(&random_webm_url, &query_webm)?;
+    //* Download a random gif
+    if let Some(query) = query {
+        let random_webm_url = tenor::random_webm(query, Some(clap_args.considered_gifs))?;
+        download_file(&random_webm_url, &query_file.base())?;
+    }
 
-    let random_look_at_time_webm_url = tenor::random_webm("look at time", None)?;
-    download_file(&random_look_at_time_webm_url, &look_at_time_webm)?;
+    let random_look_at_time_webm_url = tenor::random_webm("look at time", Some(20))?;
+    download_file(&random_look_at_time_webm_url, &look_at_time_file.base())?;
 
-    // Convert webm to gif
-    // let mut handle = ffmpeg::convert_to_gif(&random_webm_file_path)?;
-    // let mut handle2 = ffmpeg::convert_to_gif(&look_at_time_webm_file_path)?;
-
-    // handle.wait()?;
-    // handle2.wait()?;
-
-
-    
-    // Create text for gif
+    //* Create text for gif
     let day_ord = Ordinal(chrono::Local::now().day()).to_string();
     let format_str = format!("It is %H\\:%M\\:%S %A %B {day_ord} %Y");
     let text = chrono::Local::now().format(&format_str);
-    
+
+    //* Scale to same size
     let mut handles = vec![];
 
-    // Add text to time gif
+    if let Some(_) = query {
+        handles.push(ffmpeg::scale(
+            &query_file.base(),
+            None,
+            &query_file.scaled(),
+        ));
+    }
+
+    handles.push(ffmpeg::scale(
+        &look_at_time_file.base(),
+        None,
+        &look_at_time_file.scaled(),
+    ));
+
+    for handle in handles {
+        handle
+            .unwrap()
+            .wait()
+            .expect("Add text command wasn't running");
+    }
+
+    //* Add text to time gif
+    let mut handles = vec![];
+
     handles.push(ffmpeg::add_text(
-        &look_at_time_webm,
+        &look_at_time_file.scaled(),
         &text.to_string(),
-        &look_at_time_text_webm,
+        &look_at_time_file.text(),
     ));
 
-    // Add text to query gif
-    handles.push(ffmpeg::add_text(
-        &query_webm,
-        format!("time for {}", query_text).as_str(),
-        &query_webm_with_text,
-    ));
+    if let Some(query) = query {
+        let query_text = clap_args
+            .custom_text
+            .unwrap_or(format!("time for {}", query));
 
-    for handle in handles {
-        handle.unwrap().wait().expect("Add text command wasn't running");
+        // Add text to query gif
+        handles.push(ffmpeg::add_text(
+            &query_file.scaled(),
+            &query_text,
+            &query_file.text(),
+        ));
     }
 
-    // Scale to same size
-    let mut handles = vec![];
-
-    handles.push(ffmpeg::scale(&query_webm_with_text, None, &query_webm_with_text_scaled));
-    handles.push(ffmpeg::scale(&look_at_time_text_webm, None, &look_at_time_text_scaled_webm));
-
     for handle in handles {
-        handle.unwrap().wait().expect("Add text command wasn't running");
+        handle
+            .unwrap()
+            .wait()
+            .expect("Add text command wasn't running");
     }
 
-    // Stitch gifs
-    ffmpeg::stitch_files_concat_demuxer(&look_at_time_text_scaled_webm, &query_webm_with_text_scaled, &final_output)?;
+    //* Stitch gifs
+    if let Some(_) = query {
+        ffmpeg::stitch_files_concat_demuxer(
+            &look_at_time_file.text(),
+            &query_file.text(),
+            &final_output,
+        )?;
+    } else {
+        fs::rename(&look_at_time_file.text(), &final_output)
+            .expect("Rename look_at_time_text_scaled to final_output");
+    }
 
-    // Upload file to imgur
+    //* Upload file to imgur
     let res = upload_video_to_imgur(&final_output);
 
-    // tx.send(true).expect("Send stop signal to loading thread");
     sp.stop_with_newline();
-    // loading_thread_handle.join().expect("To join thread");
 
     if let Err(_) = output_and_paste(res) {
         eprintln!("There was an error uploading to imgur, so here is the file path instead:");
@@ -128,22 +171,14 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         eprintln!("{}", &can_path);
     }
 
-    // Open output folder in windows explorer if requested with "o" or "open"
-    // TODO: Use clap to make this parsing better
-    let mut args = args();
-    args.next();
-    match args.next() {
-        Some(arg) => match arg.as_str() {
-            "o" | "open" => {
-                let explorer_arg = format!(
-                    "/select,{}",
-                    final_output.as_os_str().to_string_lossy()
-                );
-                Command::new("explorer").arg(explorer_arg).output().unwrap();
-            }
-            _ => {}
-        },
-        _ => {}
+    //* Open output folder in windows explorer if requested with "o" or "open"
+    if clap_args.explorer {
+        let explorer_arg = format!("/select,{}", final_output.as_os_str().to_string_lossy());
+        Command::new("explorer").arg(explorer_arg).output().unwrap();
+    }
+
+    if clap_args.open {
+        open::that(&final_output).expect("Open the file");
     }
 
     println!("DONE DONE DONE DONE DONE DONE");
@@ -161,7 +196,9 @@ fn download_file(url: &str, file_path: &std::path::PathBuf) -> Result<(), Box<dy
 fn upload_video_to_imgur(file_path: &Path) -> reqwest::blocking::Response {
     let imgur_api = "https://api.imgur.com/3/upload";
     // let file = File::open(&file_path).expect("Open file");
-    let form = reqwest::blocking::multipart::Form::new().file("video", &file_path).expect("Create form with file");
+    let form = reqwest::blocking::multipart::Form::new()
+        .file("video", &file_path)
+        .expect("Create form with file");
 
     let client = reqwest::blocking::Client::new();
     let res = client

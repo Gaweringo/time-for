@@ -61,6 +61,12 @@ pub fn scale(
 /// Converts the given file to a gif and and returns the handle to the spawned child process.
 ///
 /// The output file will have the same name as the input but with the `.gif` file extension.
+/// 
+/// The ffmpeg command used looks like this:
+/// 
+/// ```powershell
+/// ffmpeg -i <input_file> -y -filter_complex "[0:v] split [a][b];[a] palettegen [p];[b][p] paletteuse" <input_file.gif>
+/// ```
 ///
 /// # Errors
 ///
