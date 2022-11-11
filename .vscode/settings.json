@@ -1,5 +1,6 @@
 {
 	"cSpell.words": [
+		"arboard",
 		"borderw",
 		"chrono",
 		"Datelike",
@@ -13,6 +14,7 @@
 		"palettegen",
 		"paletteuse",
 		"recv",
-		"reqwest"
+		"reqwest",
+		"thiserror"
 	]
 }

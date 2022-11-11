@@ -2,7 +2,7 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-pub(crate) struct Inputs {
+pub struct Inputs {
     /// The query to search a GIF with and add it as a text to that GIF.
     /// 
     /// The query string is used to search for a GIF with the TenorAPI.

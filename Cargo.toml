@@ -18,3 +18,4 @@ anyhow = "1.0.66"
 clap = { version = "4.0.18", features = ["derive"] }
 twelf = { version = "0.7.0", features = ["toml"] }
 open = "3.0.3"
+thiserror = "1.0.37"

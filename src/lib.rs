@@ -1,24 +1,24 @@
 use std::{
-    env::{args, temp_dir},
-    error::Error,
-    ffi::{OsStr, OsString},
+    env::temp_dir,
+    ffi::OsStr,
     fs::{self},
     io::{self, Cursor},
     path::{Path, PathBuf},
-    process::Command,
+    process::{exit, Command},
 };
 
 use anyhow::bail;
 use arboard::Clipboard;
 use chrono::Datelike;
-use clap::Parser;
+
 use ordinal::Ordinal;
 use serde::Deserialize;
 use spinners::{Spinner, Spinners};
+use tenor::TenorError;
 use tfc::{Context, Key, KeyboardContext};
 
-mod clapper;
-mod ffmpeg;
+pub mod clapper;
+pub mod ffmpeg;
 mod secrets;
 mod tenor;
 
@@ -26,7 +26,7 @@ struct MediaFile(PathBuf);
 
 impl MediaFile {
     /// The given file but with "_text" added to the file name
-    pub fn text(&self) -> PathBuf {
+    pub fn with_text(&self) -> PathBuf {
         self.add_to_file_name("_text")
     }
 
@@ -49,17 +49,55 @@ impl MediaFile {
                 + self
                     .0
                     .extension()
-                    .unwrap_or(&OsStr::new("webm"))
+                    .unwrap_or(OsStr::new("webm"))
                     .to_string_lossy())
             .to_string(),
         )
     }
 }
 
-pub fn run() -> Result<(), Box<dyn Error>> {
+use thiserror::Error;
+#[derive(Error, Debug)]
+pub enum TimeForError {
+    #[error("ffmpeg could not be found in path")]
+    FfmpegNotFound,
+    #[error("could not run ffmpeg command")]
+    FfmpegError {
+        #[from]
+        source: ffmpeg::FfmpegError,
+    },
+    #[error("could not create working directory")]
+    CreateWorkingDirectory { source: std::io::Error },
+    #[error("there was an error with a file")]
+    Io {
+        // #[from]
+        source: std::io::Error,
+    },
+    #[error("there was an error downloading a gif")]
+    Download {
+        #[from]
+        source: io::Error,
+    },
+    #[error("could not get a random gif")]
+    GetRandGif {
+        #[from]
+        source: TenorError,
+    },
+    #[error("could not make web request")]
+    Reqwest {
+        #[from]
+        source: reqwest::Error,
+    },
+}
+
+pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     println!("TIME FOR");
 
-    let clap_args = clapper::Inputs::parse();
+    // let clap_args = clapper::Inputs::parse();
+
+    if !ffmpeg::is_available() {
+        return Err(TimeForError::FfmpegNotFound);
+    }
 
     // TODO: use clap to get this from an argument
     let query = &clap_args.query;
@@ -73,12 +111,13 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let final_output = work_dir.join("full.webm");
 
     // ?: Is the check even needed?
-    match work_dir.try_exists() {
-        Ok(false) | Err(_) => fs::create_dir_all(work_dir)?,
-        Ok(true) => {}
-    }
+    fs::create_dir_all(work_dir).map_err(|e| TimeForError::CreateWorkingDirectory { source: e })?;
 
-    let mut sp = Spinner::new(Spinners::Arc, "Creating GIF".into());
+    // TODO:! Check for ffmpeg and create a useful error message
+
+    // TODO: Maybe use https://crates.io/crates/indicatif instead
+    // TODO: Look for a way to remove Spinner on error
+    let mut sp = Spinner::with_timer(Spinners::Arc, "Creating GIF".into());
 
     //* Download a random gif
     if let Some(query) = query {
@@ -86,13 +125,8 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         download_file(&random_webm_url, &query_file.base())?;
     }
 
-    let random_look_at_time_webm_url = tenor::random_webm("look at time", Some(20))?;
+    let random_look_at_time_webm_url = tenor::random_webm("look at time", Some(17))?;
     download_file(&random_look_at_time_webm_url, &look_at_time_file.base())?;
-
-    //* Create text for gif
-    let day_ord = Ordinal(chrono::Local::now().day()).to_string();
-    let format_str = format!("It is %H\\:%M\\:%S %A %B {day_ord} %Y");
-    let text = chrono::Local::now().format(&format_str);
 
     //* Scale to same size
     let mut handles = vec![];
@@ -112,19 +146,30 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     ));
 
     for handle in handles {
-        handle
+        let output = handle
             .unwrap()
-            .wait()
+            .wait_with_output()
+            // .wait()
             .expect("Add text command wasn't running");
+
+        // TODO: Make this error handling better
+        if !output.status.success() {
+            eprintln!("The gifs could not be scaled correctly!");
+            exit(1);
+        }
     }
 
-    //* Add text to time gif
+    //* Create text for gif
+    let day_ord = Ordinal(chrono::Local::now().day()).to_string();
+    let format_str = format!("It is %H:%M:%S %A %B {day_ord} %Y");
+    let text = chrono::Local::now().format(&format_str);
     let mut handles = vec![];
 
+    //* Add text to time gif
     handles.push(ffmpeg::add_text(
         &look_at_time_file.scaled(),
         &text.to_string(),
-        &look_at_time_file.text(),
+        &look_at_time_file.with_text(),
     ));
 
     if let Some(query) = query {
@@ -136,7 +181,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
         handles.push(ffmpeg::add_text(
             &query_file.scaled(),
             &query_text,
-            &query_file.text(),
+            &query_file.with_text(),
         ));
     }
 
@@ -150,12 +195,12 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     //* Stitch gifs
     if let Some(_) = query {
         ffmpeg::stitch_files_concat_demuxer(
-            &look_at_time_file.text(),
-            &query_file.text(),
+            &look_at_time_file.with_text(),
+            &query_file.with_text(),
             &final_output,
         )?;
     } else {
-        fs::rename(&look_at_time_file.text(), &final_output)
+        fs::rename(&look_at_time_file.with_text(), &final_output)
             .expect("Rename look_at_time_text_scaled to final_output");
     }
 
@@ -185,7 +230,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn download_file(url: &str, file_path: &std::path::PathBuf) -> Result<(), Box<dyn Error>> {
+fn download_file(url: &str, file_path: &std::path::PathBuf) -> Result<(), TimeForError> {
     let res = reqwest::blocking::get(url)?;
     let mut random_webm_file = fs::File::create(file_path.clone())?;
     let mut content = Cursor::new(res.bytes()?);
@@ -203,7 +248,10 @@ fn upload_video_to_imgur(file_path: &Path) -> reqwest::blocking::Response {
     let client = reqwest::blocking::Client::new();
     let res = client
         .post(imgur_api)
-        .header("Authorization", format!("Client-ID {}", secrets::CLIENT_ID))
+        .header(
+            "Authorization",
+            format!("Client-ID {}", secrets::IMGUR_CLIENT_ID),
+        )
         .multipart(form)
         .send()
         .unwrap();
@@ -213,7 +261,7 @@ fn upload_video_to_imgur(file_path: &Path) -> reqwest::blocking::Response {
 fn output_and_paste(res: reqwest::blocking::Response) -> anyhow::Result<()> {
     if let Ok(resp) = res.json::<Response>() {
         // Remove the dot '.' at the end of the link when uploading webm
-        let link = &resp.data.link.trim_end_matches('.');
+        let link = resp.data.link.trim_end_matches('.');
 
         let mut clipboard = Clipboard::new().expect("Create new clipboard");
         let _ = clipboard.set_text(link.clone());

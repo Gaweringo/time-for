@@ -1,10 +1,11 @@
 use std::{
     env::temp_dir,
-    error::Error,
     fs::{self, File},
     io::{self, Write},
+    path::Path,
     process::{Child, Command, Stdio},
 };
+use thiserror::Error;
 
 /// Overlays the `text` on the bottom of the `input_file` and saves it to the `output_file`.
 /// It also scales the file to 480x270 so that all files have the same size and can be
@@ -13,7 +14,7 @@ use std::{
 /// # Panics
 ///
 /// Panics if the ffmpeg command could not be run.
-/// 
+///
 /// # Errors
 ///
 /// This function will return an error if the `Command spawn()` command returns an error.
@@ -21,7 +22,8 @@ pub fn add_text(
     input_file: &std::path::PathBuf,
     text: &str,
     output_file: &std::path::PathBuf,
-) -> io::Result<Child> {
+) -> Result<Child> {
+    let text = text.to_string().replace(":", "\\:");
     // TODO: Find a better way to handle fonts
     let vf_text = format!("drawtext='fontfile=C\\:/Windows/fonts/impact.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text={}'", text);
     Command::new("ffmpeg")
@@ -32,6 +34,7 @@ pub fn add_text(
         .arg(output_file)
         .stderr(Stdio::null())
         .spawn()
+        .map_err(|e| e.into())
 }
 
 /// Scales the `input_file` to the given `scale` (x, y) with the default value of `480x270`
@@ -44,7 +47,7 @@ pub fn scale(
     input_file: &std::path::PathBuf,
     scale: Option<(u32, u32)>,
     output_file: &std::path::PathBuf,
-) -> io::Result<Child> {
+) -> Result<Child> {
     let scale = scale.unwrap_or((480, 270));
     Command::new("ffmpeg")
         .arg("-i")
@@ -57,14 +60,15 @@ pub fn scale(
         .arg(output_file)
         .stderr(Stdio::null())
         .spawn()
+        .map_err(|e| e.into())
 }
 
 /// Converts the given file to a gif and and returns the handle to the spawned child process.
 ///
 /// The output file will have the same name as the input but with the `.gif` file extension.
-/// 
+///
 /// The ffmpeg command used looks like this:
-/// 
+///
 /// ```powershell
 /// ffmpeg -i <input_file> -y -filter_complex "[0:v] split [a][b];[a] palettegen [p];[b][p] paletteuse" <input_file.gif>
 /// ```
@@ -72,9 +76,7 @@ pub fn scale(
 /// # Errors
 ///
 /// This function will return an error if there is an error spawning the child.
-pub fn convert_to_gif(
-    input_file: &std::path::PathBuf,
-) -> Result<std::process::Child, Box<dyn Error>> {
+pub fn convert_to_gif(input_file: &std::path::PathBuf) -> Result<Child> {
     let handle = Command::new("ffmpeg")
         .arg("-i")
         .arg(input_file)
@@ -104,7 +106,7 @@ pub fn stitch_files(
     first_file: &std::path::PathBuf,
     second_file: &std::path::PathBuf,
     output_file: &std::path::PathBuf,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     Command::new("ffmpeg")
         .arg("-i")
         .arg(first_file)
@@ -133,11 +135,12 @@ pub fn stitch_files(
 ///
 /// This function will return an error if there is a problem with creating the `concat_list.txt` file
 /// or if the ffmpeg command cannot be run.
+// Reference: https://stackoverflow.com/a/11175851/10018101
 pub fn stitch_files_concat_demuxer(
-    first_file: &std::path::PathBuf,
-    second_file: &std::path::PathBuf,
-    output_file: &std::path::PathBuf,
-) -> Result<(), Box<dyn Error>> {
+    first_file: &Path,
+    second_file: &Path,
+    output_file: &Path,
+) -> Result<()> {
     let file_list_text = format!(
         "file '{}'\nfile '{}'",
         first_file.as_os_str().to_string_lossy(),
@@ -168,3 +171,27 @@ pub fn stitch_files_concat_demuxer(
         .output()?;
     Ok(())
 }
+
+/// Check whether or not the `ffmpeg` command can be run
+pub fn is_available() -> bool {
+    Command::new("ffmpeg").output().is_ok()
+}
+
+#[derive(Error, Debug)]
+pub enum FfmpegError {
+    #[error("ffmpeg can not be found in path")]
+    NotFound,
+    #[error("Unknown Io error")]
+    Io { source: io::Error },
+}
+
+impl From<io::Error> for FfmpegError {
+    fn from(err: io::Error) -> Self {
+        match err.kind() {
+            io::ErrorKind::NotFound => FfmpegError::NotFound,
+            _ => FfmpegError::Io { source: err },
+        }
+    }
+}
+
+type Result<T> = std::result::Result<T, FfmpegError>;
