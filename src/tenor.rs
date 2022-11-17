@@ -39,7 +39,7 @@ pub fn random_webm(
     let search_request = SearchRequest {
         q: search_term.to_string(),
         key: TENOR_API_KEY.to_string(),
-        limit: considered_gifs.into(),
+        limit: considered_gifs,
         offset: None,
     };
 

@@ -19,11 +19,11 @@ use thiserror::Error;
 ///
 /// This function will return an error if the `Command spawn()` command returns an error.
 pub fn add_text(
-    input_file: &std::path::PathBuf,
+    input_file: &Path,
     text: &str,
-    output_file: &std::path::PathBuf,
+    output_file: &Path,
 ) -> Result<Child> {
-    let text = text.to_string().replace(":", "\\:");
+    let text = text.to_string().replace(':', "\\:");
     // TODO: Find a better way to handle fonts
     let vf_text = format!("drawtext='fontfile=C\\:/Windows/fonts/impact.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text={}'", text);
     Command::new("ffmpeg")
@@ -44,9 +44,9 @@ pub fn add_text(
 ///
 /// This function will return an error if the `Command spawn()` command returns an error.
 pub fn scale(
-    input_file: &std::path::PathBuf,
+    input_file: &Path,
     scale: Option<(u32, u32)>,
-    output_file: &std::path::PathBuf,
+    output_file: &Path,
 ) -> Result<Child> {
     let scale = scale.unwrap_or((480, 270));
     Command::new("ffmpeg")
@@ -76,7 +76,7 @@ pub fn scale(
 /// # Errors
 ///
 /// This function will return an error if there is an error spawning the child.
-pub fn convert_to_gif(input_file: &std::path::PathBuf) -> Result<Child> {
+pub fn convert_to_gif(input_file: &Path) -> Result<Child> {
     let handle = Command::new("ffmpeg")
         .arg("-i")
         .arg(input_file)
@@ -103,9 +103,9 @@ pub fn convert_to_gif(input_file: &std::path::PathBuf) -> Result<Child> {
 ///
 /// This function will return an error if there is a problem with spawning the command.
 pub fn stitch_files(
-    first_file: &std::path::PathBuf,
-    second_file: &std::path::PathBuf,
-    output_file: &std::path::PathBuf,
+    first_file: &Path,
+    second_file: &Path,
+    output_file: &Path,
 ) -> Result<()> {
     Command::new("ffmpeg")
         .arg("-i")

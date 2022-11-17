@@ -4,7 +4,7 @@ use clap::Parser;
 #[command(author, version, about, long_about = None)]
 pub struct Inputs {
     /// The query to search a GIF with and add it as a text to that GIF.
-    /// 
+    ///
     /// The query string is used to search for a GIF with the TenorAPI.
     /// A random GIF is picked from the first `--considered-gifs` amount of
     /// GIFs. The query is also added as a text to the GIF in the form of:
@@ -21,10 +21,10 @@ pub struct Inputs {
 
     // TODO: Implement --no-upload
     /// Do not upload the GIF to imgur, instead add it directly to the clipboard.
-    /// 
+    ///
     /// This will take longer than uploading to imgur, since the file will need to be
     /// converted to the actual GIF format locally instead of having it be done by imgur.
-    /// 
+    ///
     /// Pasting the GIF directly can also be a size problem, since e.g. Discord only
     /// accepts 8 MB for non-nitro users which GIFs can easily exceed. Imgur accepts up to
     /// a 200 MB video file, which is what the "GIF" is actually uploaded as.
@@ -32,11 +32,11 @@ pub struct Inputs {
     pub no_upload: bool,
 
     /// Open the created GIF/webm file in the Windows explorer after creating it.
-    #[arg(short='x', long, default_value_t = false)]
+    #[arg(short = 'x', long, default_value_t = false)]
     pub explorer: bool,
 
     // TODO: Implement relative folder use
-    /// Create the files in relative directory (./time-for) instead of in the 
+    /// Create the files in relative directory (./time-for) instead of in the
     /// temp directory.
     #[arg(short, long, default_value_t = false)]
     pub relative: bool,
