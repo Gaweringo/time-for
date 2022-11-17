@@ -1,10 +1,10 @@
 use std::{
     env::temp_dir,
     ffi::OsStr,
-    fs::{self},
+    fs,
     io::{self, Cursor},
     path::{Path, PathBuf},
-    process::{exit, Command},
+    process::Command,
 };
 
 use anyhow::bail;
@@ -49,7 +49,7 @@ impl MediaFile {
                 + self
                     .0
                     .extension()
-                    .unwrap_or(OsStr::new("webm"))
+                    .unwrap_or_else(|| OsStr::new("webm"))
                     .to_string_lossy())
             .to_string(),
         )
@@ -88,6 +88,8 @@ pub enum TimeForError {
         #[from]
         source: reqwest::Error,
     },
+    #[error("the gifs could not be scaled correctly!\nffmpeg exit code ({})", exit_code.map_or("None".to_string(), |c| c.to_string()))]
+    ScalingError { exit_code: Option<i32> },
 }
 
 pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
@@ -99,7 +101,6 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
         return Err(TimeForError::FfmpegNotFound);
     }
 
-    // TODO: use clap to get this from an argument
     let query = &clap_args.query;
 
     let temp = temp_dir();
@@ -113,9 +114,7 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     // ?: Is the check even needed?
     fs::create_dir_all(work_dir).map_err(|e| TimeForError::CreateWorkingDirectory { source: e })?;
 
-    // TODO:! Check for ffmpeg and create a useful error message
-
-    // TODO: Maybe use https://crates.io/crates/indicatif instead
+    ///// TODO: Maybe use https://crates.io/crates/indicatif instead
     // TODO: Look for a way to remove Spinner on error
     let mut sp = Spinner::with_timer(Spinners::Arc, "Creating GIF".into());
 
@@ -131,7 +130,7 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     //* Scale to same size
     let mut handles = vec![];
 
-    if let Some(_) = query {
+    if query.is_some() {
         handles.push(ffmpeg::scale(
             &query_file.base(),
             None,
@@ -146,16 +145,13 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     ));
 
     for handle in handles {
-        let output = handle
-            .unwrap()
-            .wait_with_output()
-            // .wait()
-            .expect("Add text command wasn't running");
+        let output = handle.unwrap().wait_with_output()?;
 
         // TODO: Make this error handling better
         if !output.status.success() {
-            eprintln!("The gifs could not be scaled correctly!");
-            exit(1);
+            return Err(TimeForError::ScalingError {
+                exit_code: output.status.code(),
+            });
         }
     }
 
@@ -193,7 +189,7 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     }
 
     //* Stitch gifs
-    if let Some(_) = query {
+    if query.is_some() {
         ffmpeg::stitch_files_concat_demuxer(
             &look_at_time_file.with_text(),
             &query_file.with_text(),
@@ -209,7 +205,7 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
 
     sp.stop_with_newline();
 
-    if let Err(_) = output_and_paste(res) {
+    if output_and_paste(res).is_err() {
         eprintln!("There was an error uploading to imgur, so here is the file path instead:");
         // Print path to output file
         let can_path = final_output.as_os_str().to_string_lossy();
@@ -230,10 +226,11 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     Ok(())
 }
 
-fn download_file(url: &str, file_path: &std::path::PathBuf) -> Result<(), TimeForError> {
+fn download_file(url: &str, file_path: &std::path::Path) -> Result<(), TimeForError> {
     let res = reqwest::blocking::get(url)?;
-    let mut random_webm_file = fs::File::create(file_path.clone())?;
+    let mut random_webm_file = fs::File::create(file_path)?;
     let mut content = Cursor::new(res.bytes()?);
+    // let content = res.text()?;
     io::copy(&mut content, &mut random_webm_file)?;
     Ok(())
 }
@@ -242,7 +239,7 @@ fn upload_video_to_imgur(file_path: &Path) -> reqwest::blocking::Response {
     let imgur_api = "https://api.imgur.com/3/upload";
     // let file = File::open(&file_path).expect("Open file");
     let form = reqwest::blocking::multipart::Form::new()
-        .file("video", &file_path)
+        .file("video", file_path)
         .expect("Create form with file");
 
     let client = reqwest::blocking::Client::new();
@@ -264,7 +261,7 @@ fn output_and_paste(res: reqwest::blocking::Response) -> anyhow::Result<()> {
         let link = resp.data.link.trim_end_matches('.');
 
         let mut clipboard = Clipboard::new().expect("Create new clipboard");
-        let _ = clipboard.set_text(link.clone());
+        let _ = clipboard.set_text(<&str>::clone(&link));
 
         let mut ctx = Context::new()?;
         ctx.key_down(Key::Control)?;
@@ -279,9 +276,10 @@ fn output_and_paste(res: reqwest::blocking::Response) -> anyhow::Result<()> {
 
 #[derive(Deserialize)]
 struct Response {
-    data: GifUrl,
+    data: Data,
 }
+
 #[derive(Deserialize, Debug)]
-struct GifUrl {
+struct Data {
     link: String,
 }

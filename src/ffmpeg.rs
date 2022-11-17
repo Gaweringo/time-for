@@ -23,7 +23,7 @@ pub fn add_text(
     text: &str,
     output_file: &std::path::PathBuf,
 ) -> Result<Child> {
-    let text = text.to_string().replace(":", "\\:");
+    let text = text.to_string().replace(':', "\\:");
     // TODO: Find a better way to handle fonts
     let vf_text = format!("drawtext='fontfile=C\\:/Windows/fonts/impact.ttf:fontcolor=white:borderw=3:fontsize=22:x=(w-text_w)/2:y=(h-text_h)-20:text={}'", text);
     Command::new("ffmpeg")
