@@ -4,6 +4,7 @@ name = "time-for"
 version = "0.1.1-alpha.2"
 description = "A CLI program to generate GIFs containing the current time and the specified topic."
 authors = ["Gaweringo"]
+
 [dependencies]
 arboard = "3.1.1"
 chrono = "0.4.22"

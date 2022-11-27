@@ -2,7 +2,7 @@ use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-pub struct Inputs {
+pub struct Args {
     /// The query to search a GIF with and add it as a text to that GIF.
     ///
     /// The query string is used to search for a GIF with the TenorAPI.
@@ -44,4 +44,8 @@ pub struct Inputs {
     /// Open the created gif/webm file in the default application.
     #[arg(short, long, default_value_t = false)]
     pub open: bool,
+
+    /// Add a delay/offset to the time on the gif to compensate for the generation time.
+    #[arg(short, long, default_value_t = 0)]
+    pub delay: i32,
 }

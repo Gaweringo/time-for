@@ -7,7 +7,7 @@ use clap::Parser;
 use time_for::clapper;
 
 fn main() -> anyhow::Result<()> {
-    let res = time_for::run(clapper::Inputs::parse());
+    let res = time_for::run(clapper::Args::parse());
     if let Err(e) = res {
         let e: anyhow::Error = e.into();
         eprintln!("\nError: {:?}", e);

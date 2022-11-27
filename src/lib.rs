@@ -92,7 +92,7 @@ pub enum TimeForError {
     ScalingError { exit_code: Option<i32> },
 }
 
-pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
+pub fn run(clap_args: clapper::Args) -> Result<(), TimeForError> {
     println!("TIME FOR");
 
     // let clap_args = clapper::Inputs::parse();
@@ -124,7 +124,7 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
         download_file(&random_webm_url, &query_file.base())?;
     }
 
-    let random_look_at_time_webm_url = tenor::random_webm("look at time", Some(17))?;
+    let random_look_at_time_webm_url = tenor::random_webm("look at time", Some(16))?;
     download_file(&random_look_at_time_webm_url, &look_at_time_file.base())?;
 
     //* Scale to same size
@@ -156,9 +156,11 @@ pub fn run(clap_args: clapper::Inputs) -> Result<(), TimeForError> {
     }
 
     //* Create text for gif
-    let day_ord = Ordinal(chrono::Local::now().day()).to_string();
+    let time = chrono::Local::now() + chrono::Duration::seconds(clap_args.delay as i64);
+    let day_ord = Ordinal(time.day()).to_string();
     let format_str = format!("It is %H:%M:%S %A %B {day_ord} %Y");
-    let text = chrono::Local::now().format(&format_str);
+    let text = time.format(&format_str);
+
     let mut handles = vec![];
 
     //* Add text to time gif
