@@ -2,9 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.1-alpha.3] - 2022-11-29
+## [0.2.0] - 2022-11-29
 
-[6bb3eef](6bb3eef3e5aeec19b6ef4004e230d7ea698aa0ef)...[424ff2a](424ff2a8e67c728de074f0e07c3129adecc5231f)
+[6bb3eef](6bb3eef3e5aeec19b6ef4004e230d7ea698aa0ef)...[5a3c731](5a3c7315795440ab52dc0c125da226f20c4b0fdf)
 
 ### Documentation
 
@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 ### Miscellaneous Tasks
 
 - Remove unneeded assets ([2c7bea7](2c7bea73ec842aac6317dcb4a455d75c6b236617))
+- Release time-for version v0.1.1-alpha3 ([5a3c731](5a3c7315795440ab52dc0c125da226f20c4b0fdf))
 
 ### Refactor
 

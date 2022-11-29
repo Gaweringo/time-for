@@ -1,7 +1,7 @@
 [package]
 edition = "2021"
 name = "time-for"
-version = "0.1.1-alpha.3"
+version = "0.2.0"
 description = "A CLI program to generate GIFs containing the current time and the specified topic."
 authors = ["Gaweringo"]
 
@@ -24,3 +24,4 @@ thiserror = "1.0.37"
 
 [package.metadata.release]
 pre-release-hook = ["git-cliff", "-t", "{{version}}", "-o", "CHANGELOG.md"]
+consolidate-commits = true
