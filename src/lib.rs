@@ -1,5 +1,5 @@
 use std::{
-    env::temp_dir,
+    env::{current_dir, temp_dir},
     ffi::OsStr,
     fs,
     io::{self, Cursor},
@@ -90,6 +90,8 @@ pub enum TimeForError {
     },
     #[error("the gifs could not be scaled correctly!\nffmpeg exit code ({})", exit_code.map_or("None".to_string(), |c| c.to_string()))]
     ScalingError { exit_code: Option<i32> },
+    #[error("no relative directory found or non sufficient permissions")]
+    NoRelativePath { source: std::io::Error },
 }
 
 pub fn run(clap_args: clapper::Args) -> Result<(), TimeForError> {
@@ -104,7 +106,14 @@ pub fn run(clap_args: clapper::Args) -> Result<(), TimeForError> {
     let query = &clap_args.query;
 
     let temp = temp_dir();
-    let work_dir = temp.join("time-for");
+    let work_dir;
+    if !clap_args.relative {
+        work_dir = temp.join("time-for");
+    } else {
+        work_dir = current_dir()
+            .map_err(|e| TimeForError::NoRelativePath { source: e })?
+            .join("time-for");
+    }
 
     let query_file = MediaFile(work_dir.join("query.webm"));
     let look_at_time_file = MediaFile(work_dir.join("look_at_time.webm"));

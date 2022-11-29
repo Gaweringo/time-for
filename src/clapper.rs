@@ -35,7 +35,6 @@ pub struct Args {
     #[arg(short = 'x', long, default_value_t = false)]
     pub explorer: bool,
 
-    // TODO: Implement relative folder use
     /// Create the files in relative directory (./time-for) instead of in the
     /// temp directory.
     #[arg(short, long, default_value_t = false)]
