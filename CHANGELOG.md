@@ -2,9 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2023-10-23
+
+[880f363](880f36382107b5134937a67e5e98422f17638c73)...[7f6521e](7f6521e07339a916c44059796fce8496ce881621)
+
+### Features
+
+- Enable the -n --no-upload flag ([7f6521e](7f6521e07339a916c44059796fce8496ce881621))
+
 ## [0.2.0] - 2022-11-29
 
-[6bb3eef](6bb3eef3e5aeec19b6ef4004e230d7ea698aa0ef)...[5a3c731](5a3c7315795440ab52dc0c125da226f20c4b0fdf)
+[6bb3eef](6bb3eef3e5aeec19b6ef4004e230d7ea698aa0ef)...[880f363](880f36382107b5134937a67e5e98422f17638c73)
 
 ### Documentation
 
@@ -20,6 +28,7 @@ All notable changes to this project will be documented in this file.
 
 - Remove unneeded assets ([2c7bea7](2c7bea73ec842aac6317dcb4a455d75c6b236617))
 - Release time-for version v0.1.1-alpha3 ([5a3c731](5a3c7315795440ab52dc0c125da226f20c4b0fdf))
+- Release ([880f363](880f36382107b5134937a67e5e98422f17638c73))
 
 ### Refactor
 
