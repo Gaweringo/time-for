@@ -212,15 +212,19 @@ pub fn run(clap_args: clapper::Args) -> Result<(), TimeForError> {
     }
 
     //* Upload file to imgur
-    let res = upload_video_to_imgur(&final_output);
+    if !clap_args.no_upload {
+        let res = upload_video_to_imgur(&final_output);
 
-    sp.stop_with_newline();
+        sp.stop_with_newline();
 
-    if output_and_paste(res).is_err() {
-        eprintln!("There was an error uploading to imgur, so here is the file path instead:");
-        // Print path to output file
-        let can_path = final_output.as_os_str().to_string_lossy();
-        eprintln!("{}", &can_path);
+        if output_and_paste(res).is_err() {
+            eprintln!("There was an error uploading to imgur, so here is the file path instead:");
+            // Print path to output file
+            let can_path = final_output.as_os_str().to_string_lossy();
+            eprintln!("{}", &can_path);
+        }
+    } else {
+        sp.stop_with_newline();
     }
 
     //* Open output folder in windows explorer if requested with "o" or "open"
@@ -294,3 +298,4 @@ struct Response {
 struct Data {
     link: String,
 }
+
